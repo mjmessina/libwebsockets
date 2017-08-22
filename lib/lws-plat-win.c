@@ -218,6 +218,10 @@ _lws_plat_service_tsi(struct lws_context *context, int timeout_ms, int tsi)
 		/* if something closed, retry this slot */
 		if (n)
 			i--;
+
+		if( wsi->trunc_len ) {
+			WSASetEvent(pt->events[0]);
+		}
 	}
 
 	/*
@@ -256,8 +260,7 @@ _lws_plat_service_tsi(struct lws_context *context, int timeout_ms, int tsi)
 				lwsl_debug("Unable to connect errno=%d\n",
 					   networkevents.iErrorCode[FD_CONNECT_BIT]);
 				pfd->revents = LWS_POLLHUP;
-			} else
-				pfd->revents = (short)networkevents.lNetworkEvents;
+			}
 
 			if (pfd->revents & LWS_POLLOUT) {
 				wsi = wsi_from_fd(context, pfd->fd);
